@@ -1,5 +1,7 @@
-const jwt = require('jwt');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
 
+dotenv.config();
 
 const authMiddleware = (req, res, next) => {
     const token = req.header('Authorization');
@@ -7,13 +9,14 @@ const authMiddleware = (req, res, next) => {
     if (!token) {
         return res.status(401).json({ message: 'Access Denied: No token provided' });
     }
-    const decoded = jwt.verify(tokenrreplace('Bearer ', ''), process.env.JWT_SECRET);
-    if (!decoded) {
+
+    try {
+        const decoded = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (error) {
         return res.status(401).json({ message: 'Access Denied: Invalid token' });
     }
-    req.user = decoded;
-    next();
-
 };
 
 module.exports = authMiddleware;
