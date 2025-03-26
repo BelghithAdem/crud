@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 // 📌 Créer un utilisateur
 exports.createUser = async (req, res) => {
@@ -57,24 +58,23 @@ exports.deleteUser = async (req, res) => {
 
 // 📌 Inscription de l'utilisateur
 exports.register = async (req, res) => {
-    try {
-      const { name, email, password, age } = req.body;
-  
-      const existingUser = await User.findOne({ email });
-      if (existingUser) {
-        return res.status(400).json({ message: "Cet email est déjà utilisé" });
-      }
-  
-      const hashedPassword = await bcrypt.hash(password, 10);
-  
-      const user = new User({ name, email, password: hashedPassword, age });
-      await user.save();
-  
-      res.status(201).json({ message: "Utilisateur créé avec succès", user });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+  try {
+    const { name, email, password, age } = req.body;
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Cet email est déjà utilisé" });
     }
-  };
+
+    // Remove manual hashing here
+    const user = new User({ name, email, password, age });
+    await user.save();
+
+    res.status(201).json({ message: "Utilisateur créé avec succès", user });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
   
   // 📌 Connexion de l'utilisateur
   exports.login = async (req, res) => {
