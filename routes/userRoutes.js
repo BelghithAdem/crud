@@ -8,6 +8,7 @@ const {
   register,
   login,
 } = require("../controllers/userController");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -18,18 +19,18 @@ router.post("/register", register);
 router.post("/login", login);
 
 // 📌 Créer un utilisateur
-router.post("/", createUser);
+router.post("/", createUser, authMiddleware);
 
 // 📌 Récupérer tous les utilisateurs
-router.get("/", getUsers);
+router.get("/", getUsers, authMiddleware);
 
 // 📌 Récupérer un utilisateur par ID
-router.get("/:id", getUserById);
+router.get("/:id", getUserById, authMiddleware);
 
 // 📌 Mettre à jour un utilisateur
-router.put("/:id", updateUser);
+router.put("/:id", updateUser, authMiddleware);
 
 // 📌 Supprimer un utilisateur
-router.delete("/:id", deleteUser);
+router.delete("/:id", deleteUser, authMiddleware);
 
 module.exports = router;
